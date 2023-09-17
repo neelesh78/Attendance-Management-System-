@@ -1,0 +1,320 @@
+# Import necessary modules from the tkinter library.
+from tkinter import *
+import tkinter.messagebox
+import time
+
+# Initialize a global variable.
+get = None
+
+# Define a function to record attendance upon button click.
+def record(event):
+    global get
+    # Create a file with the student's username as the filename.
+    a = student_username_entry.get() + '.txt'
+    fw = open(a, 'a+')
+    fwt = open("admin.txt", 'a+')
+
+    # Write various pieces of information to the student's file and the admin file.
+    fw.write("                  ")
+    fwt.write("                 ")
+    fw.write(student_username_entry.get())
+    fwt.write(student_username_entry.get())
+    fw.write("                  ")
+    fwt.write("                 ")
+    fw.write('Present')
+    fwt.write('Present')
+    fw.write("                  ")
+    fwt.write("                 ")
+    fw.write(var2.get())
+    fwt.write(var2.get())
+    fw.write("                  ")
+    fwt.write("                 ")
+    fw.write(time.strftime("%H:%M:%S"))
+    fwt.write(time.strftime("%H:%M:%S"))
+    fw.write("              ")
+    fwt.write("             ")
+    fw.write(time.strftime("%Y-%m-%d"))
+    fwt.write(time.strftime("%Y-%m-%d"))
+    fw.write('\n')
+    fwt.write('\n')
+
+    # Destroy widgets and close files.
+    get.destroy()
+    dashboard_button_1.destroy()
+    fw.close()
+
+
+# Initialize some variables.
+student_login_frame = None
+student_password_entry = None
+student_username_entry = None
+
+# Define a function for student login.
+def student_login():
+    global student_login_frame
+    student_login_frame = Frame(student_admin_frame, width=900, height=500, bg='#EBF2F8')
+    student_login_frame.place(x=0, y=0)
+    student_login_frame.tkraise()
+    username_label = Label(student_login_frame, text='Username', font=('Berlin Sans FB', 16), bg='#EBF2F8')
+    username_label.place(x=405, y=200)
+    global student_username_entry
+    student_username_entry = Entry(student_login_frame, bg='white', relief='sunken', highlightcolor='#D2E0F1',highlightthickness=1, highlightbackground='#D8D6D7', font=('Tw Cen MT', 14))
+    student_username_entry.place(x=350, y=240)
+    password_label = Label(student_login_frame, text='Password', font=('Berlin Sans FB', 16), bg='#EBF2F8')
+    password_label.place(x=405, y=280)
+    global student_password_entry
+    student_password_entry = Entry(student_login_frame, bg='white', show='*', relief='sunken', highlightcolor='#D2E0F1',highlightthickness=1, highlightbackground='#D8D6D7', font=('Tw Cen MT', 14))
+    student_password_entry.place(x=350, y=320)
+    student_password_entry.bind('<Return>', authorize)
+    login_button = Button(student_login_frame, bd=15, text="Login", bg='white' , fg='black')
+    login_button.bind('<Button-1>',authorize)
+    login_button.place(x=357, y=380)
+    cancel_button = Button(student_login_frame, bd=15, text="Cancel", bg='#EBF2F8', command=student_exit)
+    cancel_button.place(x=357, y=430)
+
+#button = Button(parent, text = 'Click me !!', bg='red', height = 5, width = 10)
+
+
+# Define a function to authorize student login.
+def authorize(event):
+    fr = open('database.txt', 'r')
+    flag = 0
+    for line in fr:
+        if student_username_entry.get() in line and student_password_entry.get()=='pass': # We set the password to the users and password is same for all students. "password = pass"
+            flag = 1
+            break
+    if flag == 1 and len(student_username_entry.get())==8: # here 8 is the how many letter present in username
+        student_portal()
+    fr.close()
+
+
+
+# Define a function to show admin records.
+def show_admin_record():
+    show_admin_record_frame = Frame(admin_display_frame, width=650, height=500, bd=0, bg='white')
+    show_admin_record_frame.place(x=0, y=0)
+    show_admin_record_frame.tkraise()
+    headings = Label(show_admin_record_frame, bg='white', text="Registration NO                  STATUS                   SUBJECT                     TIME                    DATE")
+    headings.place(x=50, y=0)
+    p = Listbox(show_admin_record_frame, width=100, height=327, bd=0, bg='black', fg='white', font="Candara 12 bold")
+    p.place(x=0, y=50)
+    global L
+    for x in range(len(L)):
+        p.insert(END, L[x])
+    L = []
+    back = Button(show_admin_record_frame, image=img20, command=admin_portal, highlightthickness=0)
+    back.place(x=560, y=-10)
+
+L = []
+
+
+# Define a function to authorize admin records.
+def authorize_admin_record():
+    global var3
+    global L
+    if enter_date_entry.get() != '':
+        fr = open("admin.txt", 'r')
+        for line in fr:
+            flag = 0
+            if enter_date_entry.get() in line and var3.get() in line:
+                flag = 1
+                if flag == 1:
+                    L.append(line)
+
+        fr.close()
+    show_admin_record()
+
+var3 = None
+enter_date_entry = None
+
+# Define a function for admin record.
+def admin_record():
+    admin_record_frame = Frame(admin_display_frame, width=650, height=500, bg='#EBF2F8')
+    admin_record_frame.place(x=0, y=0)
+    enter_date_label = Label(admin_record_frame, text="Enter Today's date in yyyy-mm-dd ", font=('Berlin Sans FB', 16), bg='#EBF2F8')
+    enter_date_label.place(x=150, y=50)
+    global var3
+    global enter_date_entry
+    var3 = StringVar()
+    enter_date_entry = Entry(admin_record_frame, bg='#EBF2F8', relief='flat', highlightcolor='#D2E0F1',highlightthickness=1, highlightbackground='#D8D6D7', font=('Tw Cen MT', 14))
+    enter_date_entry.place(x=210, y=110)
+    optionList = ('MEC201', 'MEC207', 'MEC208', 'MEC234', 'MEC323', 'MEC232', 'MEC330', 'INT102', 'PEL132') # subjects 
+    var3.set(optionList[0])
+    d_menu = OptionMenu(admin_record_frame, var3, *optionList)
+    d_menu.config(font=('calibri', (20)), width=250, fg='white', text="SUBJECTS", indicatoron=0, bd=0,bg='black') #see
+    d_menu.place(x=50, y=200)
+    get_admin_record=Button(admin_record_frame, text="Show Record",command=authorize_admin_record,bd=10,bg='#EBF2F8') #see
+    get_admin_record.place(x=240, y=340)
+
+
+def home():
+    global display_frame
+    display_frame = Frame(student_login_frame, width=650, height=500, bg='#EBF2F8')
+    display_frame.place(x=250, y=0)
+    display_frame.tkraise()
+
+
+
+# Initialize variables.
+var2 = None
+attendance_frame = None
+
+
+
+# Define a function to take attendance.
+def takeattendance():
+    global attendance_frame
+    attendance_frame = Frame(display_frame, width=650, height=500, bg='#EBF2F8')
+    attendance_frame.tkraise()
+    attendance_frame.pack()
+    instruction_label = Label(attendance_frame, text="SELECT THE SUBJECT AND PRESS THE 'Mark Attendance' LOGO", font=('Felix Titling', 14, 'bold'), bg='#EBF2F8')
+    instruction_label.place(x=20, y=100)
+    global var2
+    var2 = StringVar()
+    optionList = ('MEC201', 'MEC207', 'MEC208', 'MEC234', 'MEC323', 'MEC232', 'MEC330', 'INT102', 'PEL132') # subjects 
+    var2.set(optionList[0])
+    d_menu = OptionMenu(attendance_frame, var2, *optionList)
+    d_menu.config(font=('calibri', (20)), fg='blue', text="SUBJECTS", indicatoron=0, bd=0)
+    d_menu.place(x=150, y=200)
+    global get
+    get=Button(attendance_frame,text="Mark Attendance",bd=10,bg='#EBF2F8')#see
+    get.place(x=200,y=310)
+    get.bind("<Button-1>",record)
+    back = Button(attendance_frame, text="Back",command=home,bd=10,bg='#EBF2F8')#see
+    back.place(x=360, y=310)
+
+display_frame = None
+dashboard_button_1 = None
+
+
+# Define a function for the student's dashboard.
+def student_portal():
+    dashboard_frame = Frame(student_login_frame, width=250, height=500, bg='#1C2739')
+    dashboard_frame.place(x=0, y=0)
+    dashboard_frame.tkraise()
+#    dashboard_label=Label(dashboard_frame,bg='#1C2739')
+#   dashboard_label.place(x=5,y=5)
+
+    global dashboard_button_1
+    dashboard_button_1 = Button(dashboard_frame, text="Attendance", command=takeattendance, bg='white', fg='black', bd=30)
+    dashboard_button_1.place(x=15, y=105)
+    dashboard_button_2 = Button(dashboard_frame, text="View Record", bd=30, bg='white', fg='black', command=show_student_record)
+    dashboard_button_2.place(x=15, y=200)
+    dashboard_button_3 = Button(dashboard_frame, text='Logout', bd=30, bg='white', fg='black', command=student_login)
+    dashboard_button_3.place(x=15, y=295)
+    global display_frame
+    display_frame = Frame(student_login_frame, width=650, height=500, bg='#EBF2F8')
+    display_frame.place(x=250, y=0)
+    display_frame.tkraise()
+
+
+# Define a function to show student attendance records.
+def show_student_record():
+    showrecord_frame = Frame(display_frame, width=650, height=500, bg='#FFFFFF')
+    showrecord_frame.place(x=0, y=0)
+    showrecord_frame.tkraise()
+    headings = Label(showrecord_frame, bg='white', text="Registration NO                  STATUS                   SUBJECT                     TIME                    DATE")
+    headings.place(x=50, y=0)
+    heading_seperator = Label(showrecord_frame, bg='white')
+    heading_seperator.place(x=-50, y=20)
+    t = student_username_entry.get() + '.txt'
+    try:
+        p = Listbox(showrecord_frame, width=100, height=327, bd=0, bg='black', fg='white', font="Candara 12 bold")
+        fr = open(t, 'r')
+        line = fr.readline()
+        while line:
+            p.insert(END, line)
+            line = fr.readline()
+        p.place(x=0, y=50)
+        fr.close()
+        back = Button(showrecord_frame, text="Back", command=home, highlightthickness=0)
+        back.place(x=560, y=-10)
+    except:
+        tkinter.messagebox.showerror("ERROR", "File is Empty")
+
+admin_display_frame = None
+
+
+# Define a function for the admin dashboard.
+def admin_portal():
+    admin_dashboard_frame = Frame(admin_login_frame, width=250, height=500, bg='#1C2739')
+    admin_dashboard_frame.place(x=0, y=0)
+    admin_dashboard_frame.tkraise()
+
+    dashboard_button_1 = Button(admin_dashboard_frame, text="View Records", bd=30, bg='white', fg='black', command=admin_record)
+    dashboard_button_1.place(x=10, y=120)
+    dashboard_button_2 = Button(admin_dashboard_frame, text="LogOut", bd=30, bg='white', fg='black', command=admin_login)
+    dashboard_button_2.place(x=10, y=220)
+    global admin_display_frame
+    admin_display_frame = Frame(admin_login_frame, width=650, height=500, bg='#EBF2F8')
+    admin_display_frame.place(x=250, y=-10)
+
+
+
+
+# Define a function to authorize admin login.
+def admin_authorize(event):
+    if admin_username_entry.get()=='admin' and admin_password_entry.get()=='password': # for admin login user ansd Password 
+        admin_portal()
+
+# Define a function to exit the student interface.
+def student_exit():
+    main_window()
+
+# Define a function to exit the admin interface.
+def admin_exit():
+    main_window()
+
+admin_username_entry = None
+admin_password_entry = None
+admin_login_frame = None
+
+
+# Define a function for the admin login.
+def admin_login():
+    global admin_login_frame
+    admin_login_frame = Frame(student_admin_frame, width=900, height=500, bg='#EBF2F8')
+    admin_login_frame.place(x=0, y=0)
+    admin_login_frame.tkraise()
+    
+    username_label = Label(admin_login_frame, text='Username', font=('Berlin Sans FB', 16), bg='#EBF2F8')
+    username_label.place(x=405, y=200)
+    global admin_username_entry
+    admin_username_entry = Entry(admin_login_frame, bg='white', relief='sunken', highlightcolor='#D2E0F1',highlightthickness=1, highlightbackground='#D8D6D7', font=('Tw Cen MT', 14))
+    admin_username_entry.place(x=350, y=240)
+    password_label = Label(admin_login_frame, text='Password', font=('Berlin Sans FB', 16), bg='#EBF2F8')
+    password_label.place(x=405, y=280)
+    global admin_password_entry
+    admin_password_entry = Entry(admin_login_frame, bg='white', show='*', relief='sunken', highlightcolor='#D2E0F1',highlightthickness=1, highlightbackground='#D8D6D7', font=('Tw Cen MT', 14))
+    admin_password_entry.place(x=350, y=320)
+    admin_password_entry.bind('<Return>', admin_authorize)
+    login_button = Button(admin_login_frame, bd=15,  text="Login", bg='#EBF2F8')
+    login_button.bind('<Button-1>', admin_authorize)
+    login_button.place(x=357, y=380)
+    cancel_button = Button(admin_login_frame, bd
+    cancel_button = Button(admin_login_frame, bd=15, text="Cancel", bg='#EBF2F8', command=admin_exit)
+    cancel_button.place(x=357, y=430)
+
+student_admin_frame = None
+
+
+# Define a function for the main window.
+def main_window():
+    global student_admin_frame
+    student_admin_frame = Frame(root, width=900, height=500, bg="#EBF2F8")
+    student_admin_frame.place(x=0, y=0)
+    black_button_student = Button(student_admin_frame, bd=100, text="Student",  font=("Arial", 25, "italic"), activeforeground="dark green", activebackground="Red", pady=30, command=student_login, bg="#EBF2F8")
+    black_button_student.place(x=100, y=100)
+    black_button_teacher = Button(student_admin_frame, bd=100, text="Admin", font=("Arial", 25, "italic"), activeforeground="dark green", activebackground="Red", pady=30 , command=admin_login, bg="#EBF2F8")
+    black_button_teacher.place(x=500, y=100)
+
+# Create the main tkinter window.
+root = Tk()
+root.geometry("900x500")
+root.title("Attendance System")
+
+# Call the main window function to start the program.
+main_window()
+
+# Start the tkinter main loop.
+root.mainloop()
